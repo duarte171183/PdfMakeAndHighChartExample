@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="angular-makepdf">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>AngularJS and pdfmake</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container" ng-controller="CommentController">
+        <div class="row">
+            <div class="col-sm-4">
+                <h3 class="page-header">Submit a comment</h3>
+            </div>
+        </div>
+        <div class="row">
+            <form class="form-horizontal" ng-submit="sendComment()">
+                <!-- Name -->
+                <div class="form-group">
+                    <label for="name" class="control-label col-sm-2">Name:</label>
+                    <div class="col-sm-4">
+                        <input type="text" name="name" ng-model="user.name" class="form-control" required>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email" class="control-label col-sm-2">Email:</label>
+                    <div class="col-sm-4">
+                        <input type="email" name="email" ng-model="user.email" class="form-control" required>
+                    </div>
+                </div>
+
+                <!-- Comment -->
+                <div class="form-group">
+                    <label for="comment" class="control-label col-sm-2">Comment:</label>
+                    <div class="col-sm-4">
+                        <textarea name="comment" cols="30" rows="10" ng-model="user.comment" class="form-control" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-4">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="js/pdfmake/pdfmake.min.js"></script>
+    <script src="js/pdfmake/vfs_fonts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
