@@ -24,10 +24,9 @@
       <input type="checkbox"  ng-model="emapTrendChart2" ng-click="listenchart(emapTrendChart2)">
       <div id="emapTrendChart-chart2">Placeholder for chart</div>
     </div>
-    <canvas id="canvas1" width="1600" height="400" ng-show="false"></canvas>
-    <div id="png-container1"  ng-show="false"></div>
-    <canvas id="canvas2" width="1600" height="400" ng-show="false"></canvas>
-    <div id="png-container2"  ng-show="false"></div>
+    <canvas id="canvas" width="1600" height="400" ng-show="false"></canvas>
+    <div id="png-container" ng-show="false" ></div>
+   
     <script>
             angular.module('myModule', [])
                 .controller('myController', function ($scope) {
@@ -76,47 +75,40 @@
                                 data: [111.9, 51.5, 66.4, 129.2, 154.0, 170.0, 132.6, 142.5, 200.4, 164.1, 95.6, 54.4]
                             }]
                         });
+
+                    $scope.convertPng = function(canvas, svgString, callback){
+                        var ctx = canvas.getContext("2d");
+                        var DOMURL = self.URL || self.webkitURL || self;
+                        var svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
+                        var url = DOMURL.createObjectURL(svg);
+                        var img = new Image();
+                        img.onload = function() {
+                                ctx.drawImage(img, 0, 0);
+                                var png = canvas.toDataURL("image/png");
+                                document.getElementById('png-container').innerHTML = '<img  src="'+png+'"/>';
+                                charts.push(png);
+                                callback( DOMURL.revokeObjectURL(png));
+                               
+                            };
+                        img.src = url;
+                    }    
                     
                     $scope.exportPDF = function(){
                        
-                        if($scope.emapTrendChart1){
-                            var svgString =document.querySelector('#emapTrendChart-chart1').firstChild.innerHTML;
-                            var canvas = document.getElementById("canvas1");
-                            var ctx = canvas.getContext("2d");
-                            var DOMURL = self.URL || self.webkitURL || self;
-                            var img = new Image();
-                            var svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
-                            var url = DOMURL.createObjectURL(svg);
-                             img.onload = async function() {
-                                ctx.drawImage(img, 0, 0);
-                                var png = canvas.toDataURL("image/png");
-                                charts.push(png);
-                                document.querySelector('#png-container1').innerHTML = '<img src="'+png+'"/>';
-                                DOMURL.revokeObjectURL(png);
-                                $scope.createPDF();
-                                console.log("graph1");
-                            };
-                            img.src = url;
-                           
-                        }
                         if($scope.emapTrendChart2){
                             var svgString =document.querySelector('#emapTrendChart-chart2').firstChild.innerHTML;
-                            var canvas = document.getElementById("canvas2");
-                            var ctx = canvas.getContext("2d");
-                            var DOMURL = self.URL || self.webkitURL || self;
-                            var img = new Image();
-                            var svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
-                            var url = DOMURL.createObjectURL(svg);
-                            img.onload =  async function() {
-                                ctx.drawImage(img, 0, 0);
-                                var png = canvas.toDataURL("image/png");
-                                charts.push(png);
-                                document.querySelector('#png-container2').innerHTML = '<img src="'+png+'"/>';
-                                DOMURL.revokeObjectURL(png);
-                                console.log("graph2");
+                            var canvas = document.getElementById("canvas");
+                            $scope.convertPng(canvas, svgString, function(png){
                                 $scope.createPDF();
-                            };
-                            img.src = url;
+                            });
+                           
+                        }
+                        if($scope.emapTrendChart1){
+                            var svgString =document.querySelector('#emapTrendChart-chart1').firstChild.innerHTML;
+                            var canvas = document.getElementById("canvas");
+                            $scope.convertPng(canvas, svgString, function(png){
+                                $scope.createPDF();
+                            });
                         }
                      
                         
@@ -131,27 +123,25 @@
                                     table: {
                                     widths: [200, 'auto', 'auto'],
                                     headerRows: 2,
-                                    // keepWithHeaderRows: 1,
                                     body: [
-                                        [{text: 'Generation Optimization Center', style: 'tableHeader', colSpan: 3, alignment: 'center'}, {}, {text: 'Header 3', style: 'tableHeader', alignment: 'center'}],
-                                        ['Name: nameexample', '', '17/09/2018'],
-                                    //	[{rowSpan: 3, text: 'rowSpan set to 3\nLorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor'}, 'Sample value 2', 'Sample value 3'],
-                                        ['Email: exampleEmail', '', 'Critical'],
+                                        [{text: 'SAUDI Electricity Company – Generation Optimization Center', style: 'tableHeader', colSpan: 3, alignment: 'center'}, {}, {text: 'Header 3', style: 'tableHeader', alignment: 'center'}],
+                                        ['Name: nameexample', '',  'Date init: 17/09/2018'],
+                                        ['Email: exampleEmail', '', 'Date End: 17/09/2018'],
+                                        ['Report subject: User will fill the title', 'Report Criticality: Urgent', 'Description: Field to be filled by the user'],
+                                        ['Plant ID:', {colSpan: 2, rowSpan: 2, text: 'Qcc'}, ''],
                                         ['', '', ''],
-                                        ['Plant ID', {colSpan: 2, rowSpan: 2, text: 'Both:\nrowSpan and colSpan\ncan be defined at the same time'}, ''],
-                                        ['Sample value 1', '', ''],
                                         
                                     ]
                                     
                                 },
 			                	layout: 'noBorders'
                             },
-                            footer: {
-                                columns: [
-                                'Left part',
-                                { text: 'Right part', alignment: 'right' }
-                                ]
-                            },
+                            // footer: {
+                            //     columns: [
+                            //     'Left part',
+                            //     { text: 'Right part', alignment: 'right' }
+                            //     ]
+                            // },
                             content: [
                             {
                                 
@@ -190,7 +180,6 @@
                         };
                         if($scope.totalcharts == charts.length && charts.length>0){
                             docDefinition.content = docDefinition.content.filter(x=> x.image!=undefined)
-                           // docDefinition.content.push(text: "example");
                             pdfMake.createPdf(docDefinition).download('optionalName.pdf');
                             charts=[];
                         }
