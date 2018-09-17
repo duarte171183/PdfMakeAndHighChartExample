@@ -10,7 +10,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script src="js/pdfmake/pdfmake.min.js"></script>
     <script src="js/pdfmake/vfs_fonts.js"></script>
-    <script src="js/app.js"></script>
+
 </head>
 <body ng-controller="myController">
     <div class="col-md-12">
@@ -91,10 +91,10 @@
                                 ctx.drawImage(img, 0, 0);
                                 var png = canvas.toDataURL("image/png");
                                 charts.push(png);
-                                $scope.createPDF();
-                                console.log("graph1");
                                 document.querySelector('#png-container1').innerHTML = '<img src="'+png+'"/>';
                                 DOMURL.revokeObjectURL(png);
+                                $scope.createPDF();
+                                console.log("graph1");
                             };
                             img.src = url;
                            
@@ -111,10 +111,10 @@
                                 ctx.drawImage(img, 0, 0);
                                 var png = canvas.toDataURL("image/png");
                                 charts.push(png);
-                                $scope.createPDF();
-                                console.log("graph2");
                                 document.querySelector('#png-container2').innerHTML = '<img src="'+png+'"/>';
                                 DOMURL.revokeObjectURL(png);
+                                console.log("graph2");
+                                $scope.createPDF();
                             };
                             img.src = url;
                         }
@@ -126,7 +126,26 @@
 
                      $scope.createPDF = function(){
                         var docDefinition = {
-                            header: 'Sample how to Use PdfMake and Highcharts',
+                            pageMargins: [80, 160, 80, 50],
+                                header: {
+                                    table: {
+                                    widths: [200, 'auto', 'auto'],
+                                    headerRows: 2,
+                                    // keepWithHeaderRows: 1,
+                                    body: [
+                                        [{text: 'Generation Optimization Center', style: 'tableHeader', colSpan: 3, alignment: 'center'}, {}, {text: 'Header 3', style: 'tableHeader', alignment: 'center'}],
+                                        ['Name: nameexample', '', '17/09/2018'],
+                                    //	[{rowSpan: 3, text: 'rowSpan set to 3\nLorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor'}, 'Sample value 2', 'Sample value 3'],
+                                        ['Email: exampleEmail', '', 'Critical'],
+                                        ['', '', ''],
+                                        ['Plant ID', {colSpan: 2, rowSpan: 2, text: 'Both:\nrowSpan and colSpan\ncan be defined at the same time'}, ''],
+                                        ['Sample value 1', '', ''],
+                                        
+                                    ]
+                                    
+                                },
+			                	layout: 'noBorders'
+                            },
                             footer: {
                                 columns: [
                                 'Left part',
@@ -135,19 +154,43 @@
                             },
                             content: [
                             {
+                                
+                            
                                 image: charts[0],
                                 width: 633,
                                 height: 350
                             },
                             { 
+                              
                                 image: charts[1],
                                 width: 633,
                                 height: 350
                             }
                             ],
+                            styles: {
+                                header: {
+                                    fontSize: 18,
+                                    bold: true,
+                                    margin: [0, 0, 0, 10]
+                                },
+                                subheader: {
+                                    fontSize: 16,
+                                    bold: true,
+                                    margin: [0, 10, 0, 5]
+                                },
+                                tableExample: {
+                                    margin: [0, 5, 0, 15]
+                                },
+                                tableHeader: {
+                                    bold: true,
+                                    fontSize: 13,
+                                    color: 'black'
+                                }
+                            },
                         };
                         if($scope.totalcharts == charts.length && charts.length>0){
                             docDefinition.content = docDefinition.content.filter(x=> x.image!=undefined)
+                           // docDefinition.content.push(text: "example");
                             pdfMake.createPdf(docDefinition).download('optionalName.pdf');
                             charts=[];
                         }
